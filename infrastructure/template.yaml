@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: TfL Bus Checker Alexa Skill
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 256
+    Runtime: python3.11
+
+Parameters:
+  TfLAppId:
+    Type: String
+    Default: ''
+    Description: Optional TfL Application ID for higher rate limits
+  TfLAppKey:
+    Type: String
+    Default: ''
+    Description: Optional TfL Application Key for higher rate limits
+    NoEcho: true
+  LogLevel:
+    Type: String
+    Default: INFO
+    AllowedValues:
+      - DEBUG
+      - INFO
+      - WARNING
+      - ERROR
+    Description: Logging level for Lambda function
+
+Resources:
+  TfLBusCheckerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: tfl-bus-checker
+      CodeUri: ../lambda/
+      Handler: lambda_function.lambda_handler
+      Description: Alexa skill handler for checking TfL bus arrivals
+      Environment:
+        Variables:
+          LOG_LEVEL: !Ref LogLevel
+          TFL_APP_ID: !Ref TfLAppId
+          TFL_APP_KEY: !Ref TfLAppKey
+      Events:
+        AlexaSkillEvent:
+          Type: AlexaSkill
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tfl-bus-checker:*'
+
+Outputs:
+  TfLBusCheckerFunctionArn:
+    Description: ARN of the TfL Bus Checker Lambda function
+    Value: !GetAtt TfLBusCheckerFunction.Arn
+    Export:
+      Name: TfLBusCheckerFunctionArn
+
+  TfLBusCheckerFunctionName:
+    Description: Name of the TfL Bus Checker Lambda function
+    Value: !Ref TfLBusCheckerFunction
+    Export:
+      Name: TfLBusCheckerFunctionName

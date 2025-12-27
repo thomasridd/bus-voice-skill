@@ -1,0 +1,78 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "bus times",
+      "intents": [
+        {
+          "name": "CheckSchoolBusesIntent",
+          "slots": [
+            {
+              "name": "count",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "when's the next bus to school",
+            "check school buses",
+            "buses to school",
+            "school bus times",
+            "next {count} buses to school",
+            "next bus to school",
+            "when is the next bus to school",
+            "what time is the next bus to school",
+            "tell me the school buses",
+            "give me school bus times"
+          ]
+        },
+        {
+          "name": "CheckStationBusesIntent",
+          "slots": [
+            {
+              "name": "count",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "when's the next bus to the station",
+            "check station buses",
+            "buses to the station",
+            "station bus times",
+            "next {count} buses to the station",
+            "next bus to the station",
+            "when is the next bus to the station",
+            "what time is the next bus to the station",
+            "tell me the station buses",
+            "give me station bus times"
+          ]
+        },
+        {
+          "name": "CheckBothIntent",
+          "slots": [],
+          "samples": [
+            "check all buses",
+            "check both directions",
+            "what buses are coming",
+            "bus times",
+            "all buses",
+            "both",
+            "check everything",
+            "tell me all the buses"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    }
+  }
+}
