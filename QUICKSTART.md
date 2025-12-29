@@ -99,27 +99,16 @@ The CI pipeline will automatically run on GitHub Actions!
 
 ## 7. Set Up AWS Deployment (Optional)
 
-To enable automatic deployment:
+To enable automatic deployment to AWS Lambda:
 
-1. Go to your GitHub repo → Settings → Secrets and variables → Actions
-2. Add these secrets:
-   - `AWS_ACCESS_KEY_ID`
-   - `AWS_SECRET_ACCESS_KEY`
+**📖 See [AWS_SETUP.md](AWS_SETUP.md) for complete step-by-step guide**
+**⚡ See [AWS_SETUP_QUICKREF.md](AWS_SETUP_QUICKREF.md) for quick checklist**
 
-3. Create `samconfig.toml`:
-   ```bash
-   cp samconfig.toml.example samconfig.toml
-   # Edit samconfig.toml with your AWS details
-   ```
-
-4. Deploy:
-   ```bash
-   # Via GitHub Actions (manual trigger)
-   # Go to Actions → Deploy to AWS Lambda → Run workflow
-
-   # Or deploy locally
-   make deploy-dev
-   ```
+Quick summary:
+1. Create IAM user in AWS Console
+2. Generate access keys
+3. Add to GitHub Secrets: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+4. Deploy via GitHub Actions → Deploy to AWS Lambda → Run workflow
 
 ## Quick Reference
 

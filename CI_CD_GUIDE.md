@@ -84,10 +84,13 @@ safety check
 Before you can deploy to AWS Lambda, you need to:
 
 1. **Set up AWS credentials** in GitHub Secrets:
-   - Go to your repository → Settings → Secrets and variables → Actions
-   - Add these secrets:
-     - `AWS_ACCESS_KEY_ID`
-     - `AWS_SECRET_ACCESS_KEY`
+   - **📖 See [AWS_SETUP.md](AWS_SETUP.md) for complete step-by-step instructions**
+   - Summary:
+     - Create an IAM user in AWS Console
+     - Generate access keys for that user
+     - Add them to GitHub repository secrets:
+       - `AWS_ACCESS_KEY_ID`
+       - `AWS_SECRET_ACCESS_KEY`
 
 2. **Install AWS SAM CLI** (for local testing):
    ```bash
