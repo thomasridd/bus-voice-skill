@@ -1,12 +1,12 @@
 # config.py
 BUS_STOPS = {
     'school': {
-        'stopId': '490000123ABC',  # Replace with actual stop ID
+        'stopId': '490009659W',  # Marketplace Westbound
         'name': 'School Stop',
         'direction': 'westbound'
     },
     'station': {
-        'stopId': '490000456DEF',  # Replace with actual stop ID
+        'stopId': '490004093E',  # Blandford close Eastbound
         'name': 'Station Stop',
         'direction': 'eastbound'
     }
