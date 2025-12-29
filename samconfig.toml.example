@@ -1,0 +1,37 @@
+# Example SAM CLI configuration file
+# Copy this to samconfig.toml and customize for your AWS account
+# NOTE: samconfig.toml is gitignored to avoid committing AWS account details
+
+version = 0.1
+
+[default.global.parameters]
+stack_name = "tfl-bus-checker-dev"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.validate.parameters]
+lint = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+region = "eu-west-2"
+
+[dev.deploy.parameters]
+stack_name = "tfl-bus-checker-dev"
+s3_prefix = "tfl-bus-checker-dev"
+region = "eu-west-2"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Environment=dev"
+confirm_changeset = false
+
+[prod.deploy.parameters]
+stack_name = "tfl-bus-checker-prod"
+s3_prefix = "tfl-bus-checker-prod"
+region = "eu-west-2"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Environment=prod"
+confirm_changeset = true

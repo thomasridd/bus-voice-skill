@@ -47,5 +47,10 @@ Thumbs.db
 
 # Test coverage
 .coverage
+coverage.xml
 htmlcov/
 .pytest_cache/
+
+# Deployment artifacts
+deployment-package.zip
+response.json

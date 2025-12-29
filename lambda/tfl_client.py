@@ -1,11 +1,12 @@
 """
 TfL Unified API client for fetching bus arrivals
 """
+
 import os
+
 import requests
-from typing import List, Dict
-from requests.exceptions import RequestException, Timeout
 from config import TFL_API_BASE, TIMEOUT_SECONDS
+from requests.exceptions import RequestException, Timeout
 
 
 class TfLClient:
@@ -21,8 +22,8 @@ class TfLClient:
         """
         self.base_url = base_url or TFL_API_BASE
         self.timeout = timeout or TIMEOUT_SECONDS
-        self.app_id = os.environ.get('TFL_APP_ID')
-        self.app_key = os.environ.get('TFL_APP_KEY')
+        self.app_id = os.environ.get("TFL_APP_ID")
+        self.app_key = os.environ.get("TFL_APP_KEY")
 
     def _build_url(self, stop_id: str) -> str:
         """
@@ -38,12 +39,12 @@ class TfLClient:
 
         # Add authentication if available
         if self.app_id and self.app_key:
-            separator = '&' if '?' in url else '?'
+            separator = "&" if "?" in url else "?"
             url = f"{url}{separator}app_id={self.app_id}&app_key={self.app_key}"
 
         return url
 
-    def get_arrivals(self, stop_id: str, timeout: int = None) -> List[Dict]:
+    def get_arrivals(self, stop_id: str, timeout: int = None) -> list[dict]:
         """
         Fetch arrivals for a stop from TfL API
 
@@ -68,16 +69,16 @@ class TfLClient:
             arrivals = response.json()
 
             # Sort by timeToStation (ascending)
-            sorted_arrivals = sorted(arrivals, key=lambda x: x.get('timeToStation', float('inf')))
+            sorted_arrivals = sorted(arrivals, key=lambda x: x.get("timeToStation", float("inf")))
 
             return sorted_arrivals
 
-        except Timeout:
-            raise Timeout(f"TfL API request timed out after {timeout_val} seconds")
+        except Timeout as e:
+            raise Timeout(f"TfL API request timed out after {timeout_val} seconds") from e
         except RequestException as e:
-            raise RequestException(f"Error fetching arrivals: {str(e)}")
+            raise RequestException(f"Error fetching arrivals: {str(e)}") from e
 
-    def get_next_buses(self, stop_id: str, count: int = 3) -> List[Dict]:
+    def get_next_buses(self, stop_id: str, count: int = 3) -> list[dict]:
         """
         Get next N buses for a stop
 
@@ -100,9 +101,9 @@ class TfLClient:
         # Return only the fields we need
         return [
             {
-                'lineName': bus.get('lineName', 'Unknown'),
-                'destinationName': bus.get('destinationName', 'Unknown'),
-                'timeToStation': bus.get('timeToStation', 0)
+                "lineName": bus.get("lineName", "Unknown"),
+                "destinationName": bus.get("destinationName", "Unknown"),
+                "timeToStation": bus.get("timeToStation", 0),
             }
             for bus in next_buses
         ]

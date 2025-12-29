@@ -140,7 +140,7 @@ TIMEOUT_SECONDS = 5
 1. Parse and sort arrivals by `timeToStation` (ascending)
 1. Filter to next N buses (default 3)
 1. Format response:
-   
+
    ```
    "The next 3 buses to school are:
     Route 25 in 2 minutes to Oxford Circus,
@@ -159,7 +159,7 @@ TIMEOUT_SECONDS = 5
 
 1. Make parallel API calls to both stops
 1. Format combined response:
-   
+
    ```
    "To school: Route 25 in 2 minutes, Route 25 in 7 minutes.
     To the station: Route 73 in 3 minutes, Route 388 in 9 minutes."
@@ -168,7 +168,7 @@ TIMEOUT_SECONDS = 5
 #### Launch Request (No Intent)
 
 - Respond with help/prompt:
-  
+
   ```
   "I can check buses to school or the station. Which would you like?"
   ```
@@ -216,7 +216,7 @@ class TfLClient:
         Raises: RequestException on network errors
         """
         pass
-    
+
     def get_next_buses(self, stop_id: str, count: int = 3) -> List[Dict]:
         """
         Get next N buses for a stop
@@ -450,15 +450,15 @@ The implementation should:
 
 ```
 User: "Alexa, ask Bus Times when's the next bus to school"
-Alexa: "The next 3 buses to school are: Route 25 in 2 minutes to Oxford Circus, 
+Alexa: "The next 3 buses to school are: Route 25 in 2 minutes to Oxford Circus,
         Route 25 in 7 minutes to Oxford Circus, and Route 73 in 12 minutes to Victoria."
 
 User: "Alexa, ask Bus Times for the next 5 buses to the station"
-Alexa: "The next 5 buses to the station are: Route 73 in 1 minute to Victoria, 
+Alexa: "The next 5 buses to the station are: Route 73 in 1 minute to Victoria,
         Route 388 in 4 minutes to Elephant and Castle, Route 73 in 8 minutes to Victoria,
         Route 25 in 11 minutes to Holborn, and Route 388 in 15 minutes to Elephant and Castle."
 
 User: "Alexa, ask Bus Times to check both directions"
-Alexa: "To school: Route 25 in 3 minutes and Route 73 in 9 minutes. 
+Alexa: "To school: Route 25 in 3 minutes and Route 73 in 9 minutes.
         To the station: Route 388 in 2 minutes and Route 73 in 7 minutes."
 ```

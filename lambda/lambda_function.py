@@ -1,25 +1,24 @@
 """
 AWS Lambda handler for TfL Bus Checker Alexa Skill
 """
+
 import logging
 import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Dict, List
+from concurrent.futures import ThreadPoolExecutor
 
-from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.dispatch_components import AbstractRequestHandler, AbstractExceptionHandler
-from ask_sdk_core.utils import is_request_type, is_intent_name
+from ask_sdk_core.dispatch_components import AbstractExceptionHandler, AbstractRequestHandler
 from ask_sdk_core.handler_input import HandlerInput
+from ask_sdk_core.skill_builder import SkillBuilder
+from ask_sdk_core.utils import is_intent_name, is_request_type
 from ask_sdk_model import Response
-from requests.exceptions import RequestException, Timeout
-
-from tfl_client import TfLClient
-from bus_formatter import format_bus_list, format_both_directions
+from bus_formatter import format_both_directions, format_bus_list
 from config import BUS_STOPS, DEFAULT_BUS_COUNT
+from requests.exceptions import RequestException, Timeout
+from tfl_client import TfLClient
 
 # Configure logging
 logger = logging.getLogger(__name__)
-logger.setLevel(os.environ.get('LOG_LEVEL', 'INFO'))
+logger.setLevel(os.environ.get("LOG_LEVEL", "INFO"))
 
 # Initialize TfL client
 tfl_client = TfLClient()
@@ -34,12 +33,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input: HandlerInput) -> Response:
         speak_output = "I can check buses to school or the station. Which would you like?"
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .ask(speak_output)
-            .response
-        )
+        return handler_input.response_builder.speak(speak_output).ask(speak_output).response
 
 
 class CheckSchoolBusesIntentHandler(AbstractRequestHandler):
@@ -53,30 +47,36 @@ class CheckSchoolBusesIntentHandler(AbstractRequestHandler):
         slots = handler_input.request_envelope.request.intent.slots
         count = DEFAULT_BUS_COUNT
 
-        if 'count' in slots and slots['count'].value:
+        if "count" in slots and slots["count"].value:
             try:
-                count = int(slots['count'].value)
+                count = int(slots["count"].value)
                 count = max(1, min(count, 10))  # Clamp between 1 and 10
             except (ValueError, TypeError):
                 count = DEFAULT_BUS_COUNT
 
         try:
-            school_stop_id = BUS_STOPS['school']['stopId']
+            school_stop_id = BUS_STOPS["school"]["stopId"]
             buses = tfl_client.get_next_buses(school_stop_id, count)
-            speak_output = format_bus_list(buses, 'school')
+            speak_output = format_bus_list(buses, "school")
 
         except Timeout:
             speak_output = "Sorry, Transport for London isn't responding. Please try again."
         except RequestException as e:
             logger.error(f"Error fetching school buses: {str(e)}")
-            if hasattr(e, 'response') and e.response is not None:
+            if hasattr(e, "response") and e.response is not None:
                 status_code = e.response.status_code
                 if status_code == 429:
-                    speak_output = "I'm checking buses too frequently. Please wait a moment and try again."
+                    speak_output = (
+                        "I'm checking buses too frequently. Please wait a moment and try again."
+                    )
                 elif 400 <= status_code < 500:
-                    speak_output = "There's a problem with the bus stop configuration. Please contact support."
+                    speak_output = (
+                        "There's a problem with the bus stop configuration. Please contact support."
+                    )
                 elif 500 <= status_code < 600:
-                    speak_output = "Transport for London is experiencing issues. Please try again later."
+                    speak_output = (
+                        "Transport for London is experiencing issues. Please try again later."
+                    )
                 else:
                     speak_output = "I can't reach the bus information service right now."
             else:
@@ -85,11 +85,7 @@ class CheckSchoolBusesIntentHandler(AbstractRequestHandler):
             logger.error(f"Unexpected error in CheckSchoolBusesIntent: {str(e)}")
             speak_output = "I received unexpected data from Transport for London."
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .response
-        )
+        return handler_input.response_builder.speak(speak_output).response
 
 
 class CheckStationBusesIntentHandler(AbstractRequestHandler):
@@ -103,30 +99,36 @@ class CheckStationBusesIntentHandler(AbstractRequestHandler):
         slots = handler_input.request_envelope.request.intent.slots
         count = DEFAULT_BUS_COUNT
 
-        if 'count' in slots and slots['count'].value:
+        if "count" in slots and slots["count"].value:
             try:
-                count = int(slots['count'].value)
+                count = int(slots["count"].value)
                 count = max(1, min(count, 10))  # Clamp between 1 and 10
             except (ValueError, TypeError):
                 count = DEFAULT_BUS_COUNT
 
         try:
-            station_stop_id = BUS_STOPS['station']['stopId']
+            station_stop_id = BUS_STOPS["station"]["stopId"]
             buses = tfl_client.get_next_buses(station_stop_id, count)
-            speak_output = format_bus_list(buses, 'the station')
+            speak_output = format_bus_list(buses, "the station")
 
         except Timeout:
             speak_output = "Sorry, Transport for London isn't responding. Please try again."
         except RequestException as e:
             logger.error(f"Error fetching station buses: {str(e)}")
-            if hasattr(e, 'response') and e.response is not None:
+            if hasattr(e, "response") and e.response is not None:
                 status_code = e.response.status_code
                 if status_code == 429:
-                    speak_output = "I'm checking buses too frequently. Please wait a moment and try again."
+                    speak_output = (
+                        "I'm checking buses too frequently. Please wait a moment and try again."
+                    )
                 elif 400 <= status_code < 500:
-                    speak_output = "There's a problem with the bus stop configuration. Please contact support."
+                    speak_output = (
+                        "There's a problem with the bus stop configuration. Please contact support."
+                    )
                 elif 500 <= status_code < 600:
-                    speak_output = "Transport for London is experiencing issues. Please try again later."
+                    speak_output = (
+                        "Transport for London is experiencing issues. Please try again later."
+                    )
                 else:
                     speak_output = "I can't reach the bus information service right now."
             else:
@@ -135,11 +137,7 @@ class CheckStationBusesIntentHandler(AbstractRequestHandler):
             logger.error(f"Unexpected error in CheckStationBusesIntent: {str(e)}")
             speak_output = "I received unexpected data from Transport for London."
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .response
-        )
+        return handler_input.response_builder.speak(speak_output).response
 
 
 class CheckBothIntentHandler(AbstractRequestHandler):
@@ -154,19 +152,18 @@ class CheckBothIntentHandler(AbstractRequestHandler):
 
         school_buses = []
         station_buses = []
-        errors = []
 
         # Fetch both stops in parallel
         def fetch_school():
             try:
-                return tfl_client.get_next_buses(BUS_STOPS['school']['stopId'], count)
+                return tfl_client.get_next_buses(BUS_STOPS["school"]["stopId"], count)
             except Exception as e:
                 logger.error(f"Error fetching school buses: {str(e)}")
                 return None
 
         def fetch_station():
             try:
-                return tfl_client.get_next_buses(BUS_STOPS['station']['stopId'], count)
+                return tfl_client.get_next_buses(BUS_STOPS["station"]["stopId"], count)
             except Exception as e:
                 logger.error(f"Error fetching station buses: {str(e)}")
                 return None
@@ -183,19 +180,19 @@ class CheckBothIntentHandler(AbstractRequestHandler):
         if school_buses is None and station_buses is None:
             speak_output = "Sorry, I can't reach the bus information service right now."
         elif school_buses is None:
-            speak_output = "I found buses to the station, but couldn't check school. " + \
-                          format_bus_list(station_buses, 'the station')
+            speak_output = (
+                "I found buses to the station, but couldn't check school. "
+                + format_bus_list(station_buses, "the station")
+            )
         elif station_buses is None:
-            speak_output = "I found buses to school, but couldn't check the station. " + \
-                          format_bus_list(school_buses, 'school')
+            speak_output = (
+                "I found buses to school, but couldn't check the station. "
+                + format_bus_list(school_buses, "school")
+            )
         else:
             speak_output = format_both_directions(school_buses, station_buses)
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .response
-        )
+        return handler_input.response_builder.speak(speak_output).response
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -212,29 +209,21 @@ class HelpIntentHandler(AbstractRequestHandler):
             "What would you like?"
         )
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .ask(speak_output)
-            .response
-        )
+        return handler_input.response_builder.speak(speak_output).ask(speak_output).response
 
 
 class CancelOrStopIntentHandler(AbstractRequestHandler):
     """Handler for Cancel and Stop Intents"""
 
     def can_handle(self, handler_input: HandlerInput) -> bool:
-        return (is_intent_name("AMAZON.CancelIntent")(handler_input) or
-                is_intent_name("AMAZON.StopIntent")(handler_input))
+        return is_intent_name("AMAZON.CancelIntent")(handler_input) or is_intent_name(
+            "AMAZON.StopIntent"
+        )(handler_input)
 
     def handle(self, handler_input: HandlerInput) -> Response:
         speak_output = "Goodbye!"
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .response
-        )
+        return handler_input.response_builder.speak(speak_output).response
 
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
@@ -258,11 +247,7 @@ class IntentReflectorHandler(AbstractRequestHandler):
         intent_name = handler_input.request_envelope.request.intent.name
         speak_output = f"You just triggered {intent_name}. I'm not sure how to handle that."
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .response
-        )
+        return handler_input.response_builder.speak(speak_output).response
 
 
 class CatchAllExceptionHandler(AbstractExceptionHandler):
@@ -276,12 +261,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
         speak_output = "Sorry, I had trouble doing what you asked. Please try again."
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .ask(speak_output)
-            .response
-        )
+        return handler_input.response_builder.speak(speak_output).ask(speak_output).response
 
 
 # Build skill

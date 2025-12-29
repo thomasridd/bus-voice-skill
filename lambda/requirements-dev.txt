@@ -1,0 +1,21 @@
+# Development dependencies for testing and linting
+
+# Testing
+coverage==7.6.9
+pytest==8.3.4
+pytest-cov==6.0.0
+pytest-mock==3.14.0
+
+# Linting and formatting
+ruff==0.8.4
+
+# Security scanning
+bandit==1.8.0
+safety==3.2.11
+
+# Type checking (optional)
+mypy==1.13.0
+types-requests==2.31.0.20240406
+
+# Pre-commit hooks
+pre-commit==4.0.1

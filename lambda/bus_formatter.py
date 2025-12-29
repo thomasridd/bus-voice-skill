@@ -1,7 +1,6 @@
 """
 Bus arrival response formatting for Alexa speech output
 """
-from typing import List, Dict
 
 
 def format_time_to_arrival(seconds: int) -> str:
@@ -44,7 +43,7 @@ def format_time_to_arrival(seconds: int) -> str:
     return f"in {hours} hours and {remaining_minutes} minutes"
 
 
-def format_single_bus(arrival: Dict) -> str:
+def format_single_bus(arrival: dict) -> str:
     """
     Format one bus: 'Route 25 in 2 minutes to Oxford Circus'
 
@@ -54,14 +53,14 @@ def format_single_bus(arrival: Dict) -> str:
     Returns:
         Formatted bus description
     """
-    route = arrival['lineName']
-    destination = arrival['destinationName']
-    time_str = format_time_to_arrival(arrival['timeToStation'])
+    route = arrival["lineName"]
+    destination = arrival["destinationName"]
+    time_str = format_time_to_arrival(arrival["timeToStation"])
 
     return f"Route {route} {time_str} to {destination}"
 
 
-def format_bus_list(arrivals: List[Dict], destination_name: str) -> str:
+def format_bus_list(arrivals: list[dict], destination_name: str) -> str:
     """
     Format multiple buses for speech
 
@@ -94,7 +93,7 @@ def format_bus_list(arrivals: List[Dict], destination_name: str) -> str:
     return f"The next {count} buses to {destination_name} are: {buses_str}."
 
 
-def format_both_directions(school_buses: List[Dict], station_buses: List[Dict]) -> str:
+def format_both_directions(school_buses: list[dict], station_buses: list[dict]) -> str:
     """
     Format buses for both directions in one response
 
@@ -111,15 +110,15 @@ def format_both_directions(school_buses: List[Dict], station_buses: List[Dict]) 
     # Format school buses (short format for "both" query)
     if school_buses:
         for bus in school_buses:
-            route = bus['lineName']
-            time_str = format_time_to_arrival(bus['timeToStation'])
+            route = bus["lineName"]
+            time_str = format_time_to_arrival(bus["timeToStation"])
             school_parts.append(f"Route {route} {time_str}")
 
     # Format station buses
     if station_buses:
         for bus in station_buses:
-            route = bus['lineName']
-            time_str = format_time_to_arrival(bus['timeToStation'])
+            route = bus["lineName"]
+            time_str = format_time_to_arrival(bus["timeToStation"])
             station_parts.append(f"Route {route} {time_str}")
 
     # Build combined response

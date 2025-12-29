@@ -1,0 +1,110 @@
+name: Deploy to AWS Lambda
+
+# Trigger manually or on push to main after CI passes
+on:
+  workflow_dispatch:  # Manual trigger
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+  push:
+    branches:
+      - main
+    paths:
+      - 'lambda/**'
+      - 'infrastructure/**'
+
+# Only run if CI passes
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Lambda
+    runs-on: ubuntu-latest
+
+    # Set environment (defaults to dev for push, uses input for manual)
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-2  # Change to your preferred region
+
+    - name: Set up SAM CLI
+      uses: aws-actions/setup-sam@v2
+      with:
+        use-installer: true
+
+    - name: Install Lambda dependencies
+      run: |
+        cd lambda
+        pip install -r requirements.txt -t .
+
+    - name: Create deployment package
+      run: |
+        cd lambda
+        zip -r ../deployment-package.zip . -x "tests/*" -x "**/__pycache__/*" -x "*.pyc"
+
+    - name: Deploy with SAM
+      run: |
+        sam build
+        sam deploy \
+          --no-confirm-changeset \
+          --no-fail-on-empty-changeset \
+          --stack-name tfl-bus-checker-${{ github.event.inputs.environment || 'dev' }} \
+          --capabilities CAPABILITY_IAM \
+          --region eu-west-2 \
+          --parameter-overrides Environment=${{ github.event.inputs.environment || 'dev' }}
+
+    - name: Get Lambda function name
+      id: get-function
+      run: |
+        FUNCTION_NAME=$(aws cloudformation describe-stacks \
+          --stack-name tfl-bus-checker-${{ github.event.inputs.environment || 'dev' }} \
+          --query 'Stacks[0].Outputs[?OutputKey==`FunctionName`].OutputValue' \
+          --output text)
+        echo "function_name=$FUNCTION_NAME" >> $GITHUB_OUTPUT
+
+    - name: Run smoke test
+      if: steps.get-function.outputs.function_name != ''
+      run: |
+        # Invoke Lambda with test event
+        aws lambda invoke \
+          --function-name ${{ steps.get-function.outputs.function_name }} \
+          --payload '{"request": {"type": "LaunchRequest"}}' \
+          response.json
+
+        # Check response
+        cat response.json
+
+        # Verify no errors
+        if grep -q "errorMessage" response.json; then
+          echo "Lambda invocation failed!"
+          exit 1
+        fi
+
+    - name: Deployment summary
+      run: |
+        echo "### Deployment Summary :rocket:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ github.event.inputs.environment || 'dev' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Function**: ${{ steps.get-function.outputs.function_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Region**: eu-west-2" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
