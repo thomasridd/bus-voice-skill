@@ -79,17 +79,22 @@ jobs:
         # Invoke Lambda with test event
         aws lambda invoke \
           --function-name ${{ steps.get-function.outputs.function_name }} \
-          --payload '{"request": {"type": "LaunchRequest"}}' \
+          --cli-binary-format raw-in-base64-out \
+          --payload file://test-events/launch-request.json \
           response.json
 
         # Check response
+        echo "Lambda response:"
         cat response.json
 
         # Verify no errors
         if grep -q "errorMessage" response.json; then
           echo "Lambda invocation failed!"
+          cat response.json
           exit 1
         fi
+
+        echo "Smoke test passed!"
 
     - name: Deployment summary
       run: |

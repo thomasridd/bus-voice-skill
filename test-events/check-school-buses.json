@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "session": {
+    "new": false,
+    "sessionId": "amzn1.echo-api.session.test-session-id",
+    "application": {
+      "applicationId": "amzn1.ask.skill.test-skill-id"
+    },
+    "attributes": {},
+    "user": {
+      "userId": "amzn1.ask.account.TEST-USER-ID"
+    }
+  },
+  "context": {
+    "System": {
+      "application": {
+        "applicationId": "amzn1.ask.skill.test-skill-id"
+      },
+      "user": {
+        "userId": "amzn1.ask.account.TEST-USER-ID"
+      },
+      "device": {
+        "deviceId": "amzn1.ask.device.TEST-DEVICE-ID",
+        "supportedInterfaces": {}
+      },
+      "apiEndpoint": "https://api.amazonalexa.com",
+      "apiAccessToken": "test-token"
+    }
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "amzn1.echo-api.request.test-request-id",
+    "timestamp": "2024-01-01T12:00:00Z",
+    "locale": "en-GB",
+    "intent": {
+      "name": "CheckSchoolBusesIntent",
+      "confirmationStatus": "NONE",
+      "slots": {
+        "count": {
+          "name": "count",
+          "confirmationStatus": "NONE"
+        }
+      }
+    }
+  }
+}

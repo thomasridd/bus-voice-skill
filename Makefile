@@ -77,9 +77,13 @@ deploy-prod: ## Deploy to prod environment
 		--parameter-overrides Environment=prod \
 		--no-confirm-changeset
 
-local-test: ## Test Lambda locally with SAM
+local-test: ## Test Lambda locally with SAM (launch request)
 	sam build --template infrastructure/template.yaml
-	sam local invoke -t .aws-sam/build/template.yaml
+	sam local invoke -t .aws-sam/build/template.yaml -e test-events/launch-request.json
+
+local-test-school: ## Test school buses intent locally
+	sam build --template infrastructure/template.yaml
+	sam local invoke -t .aws-sam/build/template.yaml -e test-events/check-school-buses.json
 
 logs-dev: ## Tail Lambda logs from dev environment
 	sam logs --stack-name tfl-bus-checker-dev --tail

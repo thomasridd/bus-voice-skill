@@ -54,3 +54,6 @@ htmlcov/
 # Deployment artifacts
 deployment-package.zip
 response.json
+
+# SAM
+.aws-sam/
