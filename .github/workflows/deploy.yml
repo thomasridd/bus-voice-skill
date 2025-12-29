@@ -52,33 +52,24 @@ jobs:
       with:
         use-installer: true
 
-    - name: Install Lambda dependencies
-      run: |
-        cd lambda
-        pip install -r requirements.txt -t .
-
-    - name: Create deployment package
-      run: |
-        cd lambda
-        zip -r ../deployment-package.zip . -x "tests/*" -x "**/__pycache__/*" -x "*.pyc"
-
     - name: Deploy with SAM
       run: |
-        sam build
+        sam build --template infrastructure/template.yaml
         sam deploy \
+          --template-file .aws-sam/build/template.yaml \
           --no-confirm-changeset \
           --no-fail-on-empty-changeset \
           --stack-name tfl-bus-checker-${{ github.event.inputs.environment || 'dev' }} \
           --capabilities CAPABILITY_IAM \
           --region eu-west-2 \
-          --parameter-overrides Environment=${{ github.event.inputs.environment || 'dev' }}
+          --resolve-s3
 
     - name: Get Lambda function name
       id: get-function
       run: |
         FUNCTION_NAME=$(aws cloudformation describe-stacks \
           --stack-name tfl-bus-checker-${{ github.event.inputs.environment || 'dev' }} \
-          --query 'Stacks[0].Outputs[?OutputKey==`FunctionName`].OutputValue' \
+          --query 'Stacks[0].Outputs[?OutputKey==`TfLBusCheckerFunctionName`].OutputValue' \
           --output text)
         echo "function_name=$FUNCTION_NAME" >> $GITHUB_OUTPUT
 

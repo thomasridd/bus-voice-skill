@@ -51,21 +51,35 @@ clean: ## Remove temporary files and caches
 	rm -f deployment-package.zip response.json
 
 build: ## Build SAM application
-	sam build
+	sam build --template infrastructure/template.yaml
 
 validate: ## Validate SAM template
-	sam validate
+	sam validate --template infrastructure/template.yaml
 
 deploy-dev: ## Deploy to dev environment
-	sam build
-	sam deploy --config-env dev
+	sam build --template infrastructure/template.yaml
+	sam deploy \
+		--template-file .aws-sam/build/template.yaml \
+		--stack-name tfl-bus-checker-dev \
+		--capabilities CAPABILITY_IAM \
+		--region eu-west-2 \
+		--resolve-s3 \
+		--parameter-overrides Environment=dev
 
 deploy-prod: ## Deploy to prod environment
-	sam build
-	sam deploy --config-env prod
+	sam build --template infrastructure/template.yaml
+	sam deploy \
+		--template-file .aws-sam/build/template.yaml \
+		--stack-name tfl-bus-checker-prod \
+		--capabilities CAPABILITY_IAM \
+		--region eu-west-2 \
+		--resolve-s3 \
+		--parameter-overrides Environment=prod \
+		--no-confirm-changeset
 
 local-test: ## Test Lambda locally with SAM
-	sam local invoke -e test-event.json
+	sam build --template infrastructure/template.yaml
+	sam local invoke -t .aws-sam/build/template.yaml
 
 logs-dev: ## Tail Lambda logs from dev environment
 	sam logs --stack-name tfl-bus-checker-dev --tail

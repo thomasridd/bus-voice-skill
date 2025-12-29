@@ -10,15 +10,18 @@ stack_name = "tfl-bus-checker-dev"
 [default.build.parameters]
 cached = true
 parallel = true
+template_file = "infrastructure/template.yaml"
 
 [default.validate.parameters]
 lint = true
+template_file = "infrastructure/template.yaml"
 
 [default.deploy.parameters]
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
 region = "eu-west-2"
+template_file = ".aws-sam/build/template.yaml"
 
 [dev.deploy.parameters]
 stack_name = "tfl-bus-checker-dev"
@@ -27,6 +30,7 @@ region = "eu-west-2"
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "Environment=dev"
 confirm_changeset = false
+template_file = ".aws-sam/build/template.yaml"
 
 [prod.deploy.parameters]
 stack_name = "tfl-bus-checker-prod"
@@ -35,3 +39,4 @@ region = "eu-west-2"
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "Environment=prod"
 confirm_changeset = true
+template_file = ".aws-sam/build/template.yaml"
