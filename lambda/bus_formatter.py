@@ -111,14 +111,14 @@ def format_both_directions(school_buses: list[dict], station_buses: list[dict]) 
         for bus in school_buses:
             route = bus["lineName"]
             time_str = format_time_to_arrival(bus["timeToStation"])
-            school_parts.append(f"The {route} {time_str}")
+            school_parts.append(f"The {route} {time_str} to school")
 
     # Format station buses
     if station_buses:
         for bus in station_buses:
             route = bus["lineName"]
             time_str = format_time_to_arrival(bus["timeToStation"])
-            station_parts.append(f"The {route} {time_str}")
+            station_parts.append(f"The {route} {time_str} to the station")
 
     # Build combined response
     parts = []

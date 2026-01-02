@@ -163,11 +163,11 @@ class TestFormatBothDirections(unittest.TestCase):
         ]
         result = format_both_directions(school_buses, station_buses)
         self.assertIn("To school:", result)
-        self.assertIn("The 25 in 3 minutes", result)
-        self.assertIn("The 25 in 7 minutes", result)
+        self.assertIn("The 25 in 3 minutes to school", result)
+        self.assertIn("The 25 in 7 minutes to school", result)
         self.assertIn("To the station:", result)
-        self.assertIn("The 73 in 2 minutes", result)
-        self.assertIn("The 388 in 9 minutes", result)
+        self.assertIn("The 73 in 2 minutes to the station", result)
+        self.assertIn("The 388 in 9 minutes to the station", result)
 
     def test_both_directions_empty_school(self):
         """Test with no school buses"""
@@ -175,7 +175,7 @@ class TestFormatBothDirections(unittest.TestCase):
         station_buses = [{"lineName": "73", "destinationName": "Victoria", "timeToStation": 120}]
         result = format_both_directions(school_buses, station_buses)
         self.assertIn("To school: no buses scheduled soon", result)
-        self.assertIn("To the station: The 73 in 2 minutes", result)
+        self.assertIn("To the station: The 73 in 2 minutes to the station", result)
 
     def test_both_directions_empty_station(self):
         """Test with no station buses"""
@@ -184,7 +184,7 @@ class TestFormatBothDirections(unittest.TestCase):
         ]
         station_buses = []
         result = format_both_directions(school_buses, station_buses)
-        self.assertIn("To school: The 25 in 3 minutes", result)
+        self.assertIn("To school: The 25 in 3 minutes to school", result)
         self.assertIn("To the station: no buses scheduled soon", result)
 
     def test_both_directions_all_empty(self):
